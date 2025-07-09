@@ -65,12 +65,14 @@ func getRoot(w http.ResponseWriter, r *http.Request) {
 
 func getHello(w http.ResponseWriter, r *http.Request) {
 	context := r.Context()
+	fmt.Printf("%s got /hello request\n", context.Value(keyServerAddr))
 
 	myName := r.PostFormValue("myName")
 	if myName == "" {
-		myName = "HTTP"
+		w.Header().Set("x-missing-field", "myName")
+		w.WriteHeader(http.StatusBadRequest)
+		return
 	}
 
-	fmt.Printf("%s got /hello request\n", context.Value(keyServerAddr))
 	io.WriteString(w, fmt.Sprintf("Hello, %s!\n", myName))
 }
